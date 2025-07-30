@@ -6,10 +6,10 @@
         <Projects Include="MKOSys.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="FilesSearcher.dproj">
+        <Projects Include="Searcher.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="TextSearcher.dproj">
+        <Projects Include="Executer.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -29,32 +29,32 @@
     <Target Name="MKOSys:Make">
         <MSBuild Projects="MKOSys.dproj" Targets="Make"/>
     </Target>
-    <Target Name="FilesSearcher">
-        <MSBuild Projects="FilesSearcher.dproj"/>
+    <Target Name="Searcher">
+        <MSBuild Projects="Searcher.dproj"/>
     </Target>
-    <Target Name="FilesSearcher:Clean">
-        <MSBuild Projects="FilesSearcher.dproj" Targets="Clean"/>
+    <Target Name="Searcher:Clean">
+        <MSBuild Projects="Searcher.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="FilesSearcher:Make">
-        <MSBuild Projects="FilesSearcher.dproj" Targets="Make"/>
+    <Target Name="Searcher:Make">
+        <MSBuild Projects="Searcher.dproj" Targets="Make"/>
     </Target>
-    <Target Name="TextSearcher">
-        <MSBuild Projects="TextSearcher.dproj"/>
+    <Target Name="Executer">
+        <MSBuild Projects="Executer.dproj"/>
     </Target>
-    <Target Name="TextSearcher:Clean">
-        <MSBuild Projects="TextSearcher.dproj" Targets="Clean"/>
+    <Target Name="Executer:Clean">
+        <MSBuild Projects="Executer.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="TextSearcher:Make">
-        <MSBuild Projects="TextSearcher.dproj" Targets="Make"/>
+    <Target Name="Executer:Make">
+        <MSBuild Projects="Executer.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="MKOSys;FilesSearcher;TextSearcher"/>
+        <CallTarget Targets="MKOSys;Searcher;Executer"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="MKOSys:Clean;FilesSearcher:Clean;TextSearcher:Clean"/>
+        <CallTarget Targets="MKOSys:Clean;Searcher:Clean;Executer:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="MKOSys:Make;FilesSearcher:Make;TextSearcher:Make"/>
+        <CallTarget Targets="MKOSys:Make;Searcher:Make;Executer:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

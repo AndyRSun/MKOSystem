@@ -2,7 +2,7 @@ program MKOSys;
 
 uses
   Vcl.Forms,
-  uMain in 'uMain.pas' {fMain};
+  uMain in '_Source\uMain.pas' {fMain};
 
 {$R *.res}
 

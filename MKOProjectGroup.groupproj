@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{59626896-1AD0-479A-84E9-E73CA1155246}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="MKOSys.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FilesSearcher.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TextSearcher.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="MKOSys">
+        <MSBuild Projects="MKOSys.dproj"/>
+    </Target>
+    <Target Name="MKOSys:Clean">
+        <MSBuild Projects="MKOSys.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MKOSys:Make">
+        <MSBuild Projects="MKOSys.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FilesSearcher">
+        <MSBuild Projects="FilesSearcher.dproj"/>
+    </Target>
+    <Target Name="FilesSearcher:Clean">
+        <MSBuild Projects="FilesSearcher.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FilesSearcher:Make">
+        <MSBuild Projects="FilesSearcher.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TextSearcher">
+        <MSBuild Projects="TextSearcher.dproj"/>
+    </Target>
+    <Target Name="TextSearcher:Clean">
+        <MSBuild Projects="TextSearcher.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TextSearcher:Make">
+        <MSBuild Projects="TextSearcher.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="MKOSys;FilesSearcher;TextSearcher"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="MKOSys:Clean;FilesSearcher:Clean;TextSearcher:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="MKOSys:Make;FilesSearcher:Make;TextSearcher:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

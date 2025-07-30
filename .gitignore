@@ -1,0 +1,8 @@
+# Временные файлы Delphi
+**/__history/
+**/*.dcu
+**/*.dsk
+**/*.identcache
+**/*.local
+**/*.~*
+**/Backup*/

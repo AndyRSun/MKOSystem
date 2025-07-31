@@ -2,7 +2,8 @@ program MKOSys;
 
 uses
   Vcl.Forms,
-  uMain in '_Source\uMain.pas' {fMain};
+  uMain in '_Source\uMain.pas' {fMain},
+  TaskInterface in '_Source\TaskInterface.pas';
 
 {$R *.res}
 

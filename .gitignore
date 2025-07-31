@@ -1,5 +1,6 @@
 # Временные файлы Delphi
 **/__history/
+**/__recovery/
 **/*.dcu
 **/*.dsk
 **/*.identcache

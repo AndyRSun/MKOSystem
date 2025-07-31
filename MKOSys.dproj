@@ -102,6 +102,7 @@
             <Form>fMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="_Source\TaskInterface.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

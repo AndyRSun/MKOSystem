@@ -1,25 +1,60 @@
 library Executer;
 
-{ Important note about DLL memory management: ShareMem must be the
-  first unit in your library's USES clause AND your project's (select
-  Project-View Source) USES clause if your DLL exports any procedures or
-  functions that pass strings as parameters or function results. This
-  applies to all strings passed to and from your DLL--even those that
-  are nested in records and classes. ShareMem is the interface unit to
-  the BORLNDMM.DLL shared memory manager, which must be deployed along
-  with your DLL. To avoid using BORLNDMM.DLL, pass string information
-  using PChar or ShortString parameters.
-
-  Important note about VCL usage: when this DLL will be implicitly
-  loaded and this DLL uses TWicImage / TImageCollection created in
-  any unit initialization section, then Vcl.WicImageInit must be
-  included into your library's USES clause. }
-
 uses
   System.SysUtils,
-  System.Classes;
+  ActiveX,
+  System.Classes,
+  TaskInterface in '_Source\TaskInterface.pas';
 
 {$R *.res}
+function GetTasks(var Tasks: PTaskArray; out Count: Integer): Integer; stdcall;
+var i: Integer;
+    TaskArray: TTaskArray;
+begin
+  try
+    Count := 2;
+    SetLength(TaskArray, Count);
+    begin
+      var Params := TArray<PWideChar>.Create(
+        PWideChar(WideString('Исполняемый файл')),
+        PWideChar(WideString('Параметры'))
+      );
+      TaskArray[0] := TTaskInfo.Create('ApplicationExecution','ApplicationExecution', Params);
+    end;
+    begin
+      var Params := TArray<PWideChar>.Create(
+        PWideChar(WideString('Путь к архиватору')),
+        PWideChar(WideString('Ключи архиватора')),
+        PWideChar(WideString('Папка для архивирования')),
+        PWideChar(WideString('Файл архива'))
+      );
+      TaskArray[1] := TTaskInfo.Create('FolderArchivator','FolderArchivator', Params);
+    end;
+    New(Tasks);
+    Tasks^ := Copy(TaskArray, 0, Count);
+
+    Result := 0;
+  except
+    Result := -1;
+  end;
+end;
+
+procedure FreeTasks(Tasks: PTaskArray; Count: Integer); stdcall;
+var i: integer;
+begin
+  if Tasks = nil then Exit;
+
+  for i := 0 to Count -1 do
+  begin
+     Tasks^[i].FreeResources;
+  end;
+
+  FreeMem(Tasks);
+end;
+
+exports
+  GetTasks,
+  FreeTasks;
 
 begin
 end.

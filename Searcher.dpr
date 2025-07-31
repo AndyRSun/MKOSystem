@@ -7,28 +7,27 @@ uses
 
 {$R *.res}
 
-{
-function Execute_MaskFileSearch(const Param1, Param2: string): TArray<string>; stdcall;
-begin
-
-end;
-
-function Execute_TextSearch(const Param1, Param2: string): TArray<string>; stdcall;
-begin
-
-end;}
-
-function GetTasks(out Tasks: PTaskArray; out Count: Integer): Integer; stdcall;
+function GetTasks(var Tasks: PTaskArray; out Count: Integer): Integer; stdcall;
 var i: Integer;
     TaskArray: TTaskArray;
 begin
   try
     Count := 2;
     SetLength(TaskArray, Count);
-
-    TaskArray[0] := TTaskInfo.Create('MaskFileSearch','MaskFileSearch','Маски файлов','Путь для поиска');
-    TaskArray[1] := TTaskInfo.Create('TextSearch','TextSearch','Слова для поиска','Файл поиска');
-
+    begin
+      var Params := TArray<PWideChar>.Create(
+        PWideChar(WideString('Маски файлов')),
+        PWideChar(WideString('Путь для поиска'))
+      );
+      TaskArray[0] := TTaskInfo.Create('MaskFileSearch','MaskFileSearch', Params);
+    end;
+    begin
+      var Params := TArray<PWideChar>.Create(
+        PWideChar(WideString('Слова для поиска')),
+        PWideChar(WideString('Файл поиска'))
+      );
+      TaskArray[1] := TTaskInfo.Create('TextSearch','TextSearch', Params);
+    end;
     New(Tasks);
     Tasks^ := Copy(TaskArray, 0, Count);
 

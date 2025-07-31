@@ -11,6 +11,7 @@ object fMain: TfMain
   Font.Name = 'Segoe UI'
   Font.Style = []
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   TextHeight = 15
   object btnLoadDLLs: TBitBtn
     Left = 8
@@ -44,40 +45,26 @@ object fMain: TfMain
     ViewStyle = vsReport
     OnSelectItem = lvTasksSelectItem
   end
-  object edtParam1: TLabeledEdit
-    Left = 8
-    Top = 351
-    Width = 300
-    Height = 23
-    EditLabel.Width = 40
-    EditLabel.Height = 15
-    EditLabel.Caption = 'Param1'
-    TabOrder = 2
-    Text = ''
-  end
-  object edtParam2: TLabeledEdit
-    Left = 8
-    Top = 408
-    Width = 300
-    Height = 23
-    EditLabel.Width = 40
-    EditLabel.Height = 15
-    EditLabel.Caption = 'Param2'
-    TabOrder = 3
-    Text = ''
-  end
   object btnExecute: TBitBtn
-    Left = 8
-    Top = 456
+    Left = 766
+    Top = 327
     Width = 75
     Height = 25
     Caption = 'btnExecute'
-    TabOrder = 4
+    TabOrder = 2
+  end
+  object StringGrid1: TStringGrid
+    Left = 8
+    Top = 327
+    Width = 737
+    Height = 185
+    ColCount = 2
+    TabOrder = 3
   end
   object dlgOpenDlls: TOpenDialog
     Filter = '(*.dll)|*.dll'
     Options = [ofHideReadOnly, ofNoChangeDir, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing]
-    Left = 32
-    Top = 384
+    Left = 792
+    Top = 416
   end
 end

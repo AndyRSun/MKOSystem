@@ -3,6 +3,13 @@ unit TaskInterface;
 interface
 
 type
+  TErrorCode = (
+    ecSuccess,
+    ecTaskNotFound,
+    ecInvalidParameters,
+    ecUnknown
+  );
+
   TTaskInfo = record
     TaskName: PWideChar;
     Description: PWideChar;
@@ -14,9 +21,17 @@ type
   TTaskArray = TArray<TTaskInfo>;
   PTaskArray = ^TTaskArray;
 
-  TTaskExecute = function(const TaskName, Param1, Param2: PWideChar): TArray<string>; stdcall;
-  TGetTasks = function(var Arr: PTaskArray; out Count: Integer): Integer; stdcall;
+  TParams = TArray<PWideChar>;
+  PParams = ^TParams;
+
+  TResults = TArray<PWideChar>;
+  PResults = ^TResults;
+
+  TGetTasks = function(var Arr: PTaskArray; out Count: Integer): TErrorCode; stdcall;
   TFreeTasks  = procedure(var Arr: PTaskArray; Count: Integer); stdcall;
+
+  TRunTask = function(TaskName: PWideChar; Params: PParams; var Results: PResults; out Count: Integer): TErrorCode; stdcall;
+  TClearTaskVars = procedure(var Results: PResults; var Count: Integer);
 
 implementation
 

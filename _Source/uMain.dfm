@@ -2,8 +2,8 @@ object fMain: TfMain
   Left = 0
   Top = 0
   Caption = 'fMain'
-  ClientHeight = 519
-  ClientWidth = 862
+  ClientHeight = 518
+  ClientWidth = 858
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -41,6 +41,7 @@ object fMain: TfMain
         Caption = 'DLL'
         Width = 300
       end>
+    Items.ItemData = {}
     TabOrder = 1
     ViewStyle = vsReport
     OnSelectItem = lvTasksSelectItem
@@ -52,6 +53,7 @@ object fMain: TfMain
     Height = 25
     Caption = 'btnExecute'
     TabOrder = 2
+    OnClick = btnExecuteClick
   end
   object StringGrid1: TStringGrid
     Left = 8

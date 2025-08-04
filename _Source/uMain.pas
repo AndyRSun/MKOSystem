@@ -10,7 +10,8 @@ uses
 type
 
 TTaskEntry = record
-    DLLName: string;
+    DLLName: String;
+    DLLHandle: HMODULE;
     TaskName: string;
     Description: string;
     ParamsInfo: TArray<string>;
@@ -27,6 +28,7 @@ TfMain = class(TForm)
     procedure lvTasksSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
     procedure FormDestroy(Sender: TObject);
+    procedure btnExecuteClick(Sender: TObject);
 
   private
     FTasks: TList<TTaskEntry>;
@@ -37,6 +39,7 @@ TfMain = class(TForm)
     procedure UpdateTasksList;
     procedure UnloadAllDLLs;
     procedure LoadTasksFromDLLs(const DLLFiles: TArray<string>);
+    procedure ExecuteTask;
 
   public
   end;
@@ -47,6 +50,67 @@ var
 implementation
 
 {$R *.dfm}
+
+
+procedure TfMain.ExecuteTask();
+var
+  I, ParamCount: Integer;
+  ParamsArray: TParams;
+  ParamsPtr: PParams;
+  Results: PResults;
+  Res : TErrorCode;
+  RunTask: TRunTask;
+  ClearTaskVars: TClearTaskVars;
+  Count: integer;
+begin
+
+  @RunTask := GetProcAddress(FTasks[FSelectedTaskIndex].DLLHandle, 'RunTask');
+  if not Assigned(RunTask) then
+  begin
+    ShowMessage('Функция RunTask не найдена в DLL');    //todo: Сделать не ошибкой а в LOG
+    Exit;
+  end;
+
+
+  ParamCount := Length(FTasks[FSelectedTaskIndex].ParamsInfo);
+
+  SetLength(ParamsArray, ParamCount);
+
+  for I := 0 to ParamCount - 1  do
+    ParamsArray[I] := StrNew(PWideChar(Trim(StringGrid1.Cells[1, i + 1])));
+
+  ParamsPtr := @ParamsArray;
+
+  Res := RunTask(PWideChar(FTasks[FSelectedTaskIndex].TaskName), ParamsPtr, Results, Count);
+
+  //Вставить код логирования
+
+  //
+
+
+  //Очищаем ParamsPtr тут
+  for I := 0 to High(ParamsArray) do
+  begin
+    if ParamsArray[I] <> nil then
+    begin
+      StrDispose(ParamsArray[I]);
+      ParamsArray[I] := nil;
+    end;
+  end;
+  SetLength(ParamsArray, 0);
+  ParamsPtr := nil;
+
+  //Очищаем Results в DLL
+  @ClearTaskVars := GetProcAddress(FTasks[FSelectedTaskIndex].DLLHandle, 'ClearTaskVars');
+  ClearTaskVars(Results, Count);
+
+end;
+
+
+procedure TfMain.btnExecuteClick(Sender: TObject);
+begin
+  ExecuteTask();
+end;
 
 procedure TfMain.btnLoadDLLsClick(Sender: TObject);
 begin
@@ -90,14 +154,15 @@ begin
       if not (Assigned(GetTasks) and Assigned(FreeTasks)) then
         raise Exception.CreateFmt('Функция GetTasks/FreeTasks не найдена в %s', [DLLFile]);
 
-      if GetTasks(Tasks, TaskCount) <> 0 then
+      if GetTasks(Tasks, TaskCount) <> ecSuccess then
         raise Exception.CreateFmt('Функция GetTasks вернула ошибку в %s', [DLLFile]);
 
       FHandleList.Add(DLLHandle);
 
       for var Task in Tasks^ do
       begin
-        TaskEntry.DLLName := DLLFile;
+        TaskEntry.DLLHandle := DLLHandle;
+        TaskEntry.DLLName  := DLLFile;
 
         TaskEntry.TaskName := string(Task.TaskName);
         TaskEntry.Description := string(Task.Description);

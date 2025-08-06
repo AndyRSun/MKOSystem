@@ -3,10 +3,13 @@ uses
   System.SysUtils,
   ActiveX,
   System.Classes,
-  TaskInterface in '_Source\TaskInterface.pas';
+  TaskInterface in '_Source\TaskInterface.pas'      ,
+  Winapi.Windows;
+
 
 {$R *.res}
 
+// Здесть и далее - параметр Tasks передается с атриббутом var, т.к. меняется размер массива.
 function GetTasks(var Tasks: PTaskArray; out Count: Integer): Integer; stdcall;
 var i: Integer;
     TaskArray: TTaskArray;
@@ -55,26 +58,41 @@ end;
 
 function RunMaskFileSearch(Params: PParams; var Results: PResults; out count: Integer): TErrorCode;
 
-procedure SearchFiles(const pPath, Mask: string; var FileList: TStringList; pRecursive: Boolean);
+procedure SearchFiles(const pPath, Mask: string; var FileArray: TResults; pRecursive: Boolean);
 var
   SearchRec: TSearchRec;
   SearchPath: string;
+  tempPath, fileName, FullPath: WideString;
+  Ptr: PWideChar;
 begin
-  // Убедимся, что путь заканчивается на разделитель
+
   SearchPath := IncludeTrailingPathDelimiter(pPath);
 
-  // Поиск файлов по маске
   if FindFirst(SearchPath + Mask, faAnyFile and not faDirectory, SearchRec) = 0 then
   begin
     repeat
-      // Исключаем текущий и родительский каталоги
       if (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
-        FileList.Add(SearchPath + SearchRec.Name);
+      begin
+
+        tempPath := WideString(SearchPath);
+        fileName := WideString(SearchRec.Name);
+        FullPath := tempPath + fileName;
+
+        //Ptr := StrAlloc(Length(FullPath) + 1);
+        Ptr := PWideChar(LocalAlloc(LPTR, (Length(FullPath) + 1) * SizeOf(WideChar)));
+        try
+          Move(PWideChar(FullPath)^, Ptr^, (Length(FullPath) + 1) * SizeOf(WideChar));
+          SetLength(FileArray, Length(FileArray) + 1);
+          FileArray[High(FileArray)] := Ptr;
+        except
+          StrDispose(Ptr);
+        end;
+      end;
     until FindNext(SearchRec) <> 0;
     System.SysUtils.FindClose(SearchRec);
   end;
 
-  // Если рекурсия включена, ищем подкаталоги и вызываем рекурсивно
+
   if pRecursive then
   begin
     if FindFirst(SearchPath + '*', faDirectory, SearchRec) = 0 then
@@ -83,8 +101,7 @@ begin
         if ((SearchRec.Attr and faDirectory) <> 0) and
            (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
         begin
-          // Рекурсивный вызов для подкаталога
-          SearchFiles(SearchPath + SearchRec.Name, Mask, FileList, True);
+          SearchFiles(SearchPath + SearchRec.Name, Mask, FileArray, True);
         end;
       until FindNext(SearchRec) <> 0;
       System.SysUtils.FindClose(SearchRec);
@@ -96,11 +113,12 @@ var
   pFileMask, pPath, pRecursive: string;
   MaskArray: TArray<string>;
   I: Integer;
-  FileArray: TStringList;
+  FileArray: TResults;
 begin
   Result := ecSuccess;
   Count := 0;
-  FileArray := TStringList.Create;
+  Results := nil;
+  SetLength(FileArray, 0);
 
   try
     if not Assigned(Params) or not Assigned(Params^) or (Length(Params^) < 3) then
@@ -119,20 +137,17 @@ begin
     begin
       var Mask := Trim(MaskArray[I]);
       if Mask = '' then Continue;
-
-      FileArray.Add('Поиск маски: "' + Mask + '", По пути: ' + pPath);
-
       SearchFiles(pPath, Mask, FileArray, pRecursive <> '');
     end;
 
-    Count := FileArray.Count;
+    Count := Length(FileArray);
     if Count > 0 then
     begin
       New(Results);
       SetLength(Results^, Count);
       for I := 0 to Count - 1 do
       begin
-        Results^[I] := StrNew(PWideChar(FileArray[I]));
+        Results^[I] := StrNew(FileArray[I]);
       end;
     end;
 
@@ -143,7 +158,9 @@ begin
       Count := 0;
     end;
   end;
-  FileArray.Free;
+
+  for I := 0 to High(FileArray) do StrDispose(FileArray[I]);
+
 end;
 
 
@@ -196,4 +213,5 @@ exports
   ;
 begin
   IsMultiThread := True;
+  ReportMemoryLeaksOnShutdown := True;
 end.

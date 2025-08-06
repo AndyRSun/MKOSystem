@@ -37,6 +37,7 @@ TfMain = class(TForm)
     FSelectedTaskIndex: Integer;
 
     procedure UpdateTasksList;
+    procedure FreeAllMemory();
     procedure UnloadAllDLLs;
     procedure LoadTasksFromDLLs(const DLLFiles: TArray<string>);
     procedure ExecuteTask;
@@ -51,6 +52,8 @@ implementation
 
 {$R *.dfm}
 
+// Обычно я комментирую каждый блок кода, на в данной тестовой работе для скорости я комментирую только самое важное
+// Чтобы объяснить свои действия
 
 procedure TfMain.ExecuteTask();
 var
@@ -208,6 +211,8 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
+  ReportMemoryLeaksOnShutdown := True;
+
   FTasks := TList<TTaskEntry>.Create;
   FHandleList := TList<HMODULE>.Create;
   FSelectedTaskIndex := -1;
@@ -225,8 +230,14 @@ begin
 
 end;
 
+procedure TfMain.FreeAllMemory();
+begin
+  FTasks.Free;
+end;
+
 procedure TfMain.FormDestroy(Sender: TObject);
 begin
+  FreeAllMemory();
   UnloadAllDLLs();
 end;
 

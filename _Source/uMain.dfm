@@ -41,7 +41,6 @@ object fMain: TfMain
         Caption = 'DLL'
         Width = 300
       end>
-    Items.ItemData = {}
     TabOrder = 1
     ViewStyle = vsReport
     OnSelectItem = lvTasksSelectItem

@@ -78,8 +78,7 @@ begin
         fileName := WideString(SearchRec.Name);
         FullPath := tempPath + fileName;
 
-        //Ptr := StrAlloc(Length(FullPath) + 1);
-        Ptr := PWideChar(LocalAlloc(LPTR, (Length(FullPath) + 1) * SizeOf(WideChar)));
+        Ptr := StrAlloc(Length(FullPath) + 1);
         try
           Move(PWideChar(FullPath)^, Ptr^, (Length(FullPath) + 1) * SizeOf(WideChar));
           SetLength(FileArray, Length(FileArray) + 1);
